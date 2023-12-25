@@ -5,6 +5,10 @@ import "fmt"
 // A set of distinct elements.
 type Set[K comparable] map[K]struct{}
 
+func NewSet[K comparable](vals ...K) Set[K] {
+	return FromList(vals)
+}
+
 // Create a new set from a list. If l is nil, the set is empty.
 func FromList[K comparable](l []K) Set[K] {
 	out := make(map[K]struct{})
