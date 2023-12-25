@@ -1,0 +1,2 @@
+# minesolver
+Minesweeper solver
