@@ -113,9 +113,9 @@ func Pass(b *board.Board, maxSteps int) bool {
 		}
 	}
 
-	e.Deduce(maxSteps)
+	e.Deduce(maxSteps, true)
 	if e.HasConclusion() {
-		c := e.Conclusion()
+		c := e.Conclusions()[0]
 		if c.DefiniteMine() {
 			vec := c.tiles.AsList()[0]
 			b.Flag(vec.X, vec.Y, true)

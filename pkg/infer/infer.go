@@ -30,7 +30,7 @@ type Engine[T any] struct {
 	hasConclusion bool
 
 	// The conclusion of inference, if hasConclusion = true.
-	conclusion T
+	conclusions []T
 }
 
 // Create a new inference engine, given a set of logic functions.
@@ -58,8 +58,7 @@ func (e *Engine[T]) AddFact(f T) {
 		return
 	} else if e.logic.IsConclusion(f) {
 		e.hasConclusion = true
-		e.conclusion = f
-		return
+		e.conclusions = append(e.conclusions, f)
 	}
 	for _, other := range e.facts {
 		if e.logic.Relevant(f, other) {
@@ -70,9 +69,9 @@ func (e *Engine[T]) AddFact(f T) {
 }
 
 // Run the given number of deductive steps, or until a final conclusion is reached.
-func (e *Engine[T]) Deduce(maxSteps int) {
+func (e *Engine[T]) Deduce(maxSteps int, exitOnFirstConclusion bool) {
 	for r := 0; r < maxSteps; r++ {
-		if e.hasConclusion || len(e.deduceQ) == 0 {
+		if (exitOnFirstConclusion && e.hasConclusion) || len(e.deduceQ) == 0 {
 			return
 		}
 		next := e.deduceQ[0]
@@ -83,7 +82,7 @@ func (e *Engine[T]) Deduce(maxSteps int) {
 		}
 		for _, f := range out {
 			e.AddFact(f)
-			if e.hasConclusion {
+			if exitOnFirstConclusion && e.hasConclusion {
 				return
 			}
 		}
@@ -96,6 +95,6 @@ func (e *Engine[T]) HasConclusion() bool {
 }
 
 // Get the conclusion fact reached by the engine.
-func (e *Engine[T]) Conclusion() T {
-	return e.conclusion
+func (e *Engine[T]) Conclusions() []T {
+	return e.conclusions
 }
