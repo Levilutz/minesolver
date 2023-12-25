@@ -57,7 +57,7 @@ func (b *Board) HasReveals() bool {
 	return false
 }
 
-// Check whether the game is complete.
+// Check whether the game is complete (all non-mines revealed).
 func (b *Board) Complete() bool {
 	for x := 0; x < b.size; x++ {
 		for y := 0; y < b.size; y++ {
@@ -67,6 +67,31 @@ func (b *Board) Complete() bool {
 		}
 	}
 	return true
+}
+
+// Check whether any mines have been revealed (game loss).
+func (b *Board) HasRevealedMines() bool {
+	for x := 0; x < b.size; x++ {
+		for y := 0; y < b.size; y++ {
+			if b.mines[x][y] && b.revealed[x][y] {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// Count the number of remaining unflagged mines.
+func (b *Board) UnflaggedMines() int {
+	out := 0
+	for x := 0; x < b.size; x++ {
+		for y := 0; y < b.size; y++ {
+			if b.mines[x][y] && !b.flags[x][y] {
+				out += 1
+			}
+		}
+	}
+	return out
 }
 
 // Get data for the given tile.
