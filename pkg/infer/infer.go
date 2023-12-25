@@ -5,9 +5,6 @@ type Logic[T any] interface {
 	// Return whether two facts are equivalent.
 	Eq(a, b T) bool
 
-	// Return any facts derivable from a single given.
-	DeduceSingle(f T) []T
-
 	// Return any facts derivable from a pair of given.
 	DeduceDual(a, b T) []T
 
@@ -40,8 +37,8 @@ type Engine[T any] struct {
 func NewEngine[T any](logic Logic[T]) *Engine[T] {
 	return &Engine[T]{
 		logic:   logic,
-		facts:   make([]T, 0),
-		deduceQ: make([][]T, 0),
+		facts:   []T{},
+		deduceQ: [][]T{},
 	}
 }
 
@@ -64,7 +61,6 @@ func (e *Engine[T]) AddFact(f T) {
 		e.conclusion = f
 		return
 	}
-	e.deduceQ = append(e.deduceQ, []T{f})
 	for _, other := range e.facts {
 		if e.logic.Relevant(f, other) {
 			e.deduceQ = append(e.deduceQ, []T{f, other})
@@ -82,9 +78,7 @@ func (e *Engine[T]) Deduce(maxSteps int) {
 		next := e.deduceQ[0]
 		e.deduceQ = e.deduceQ[1:]
 		var out []T = nil
-		if len(next) == 1 {
-			out = e.logic.DeduceSingle(next[0])
-		} else {
+		if len(next) == 2 {
 			out = e.logic.DeduceDual(next[0], next[1])
 		}
 		for _, f := range out {
