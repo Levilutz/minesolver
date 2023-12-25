@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/levilutz/minesweeper/pkg/board"
+	"github.com/levilutz/minesweeper/pkg/deduce"
 	"github.com/levilutz/minesweeper/pkg/solver"
 	"github.com/levilutz/minesweeper/pkg/textrender"
 )
@@ -25,8 +26,12 @@ func ViewOne() {
 
 	for {
 		fmt.Println(textrender.RenderBoard(b))
-		tookAction := solver.Pass(b)
-		if b.Complete() {
+		tookAction := deduce.Pass(b, 100000)
+		if b.HasRevealedMines() {
+			fmt.Println(textrender.RenderBoard(b))
+			fmt.Println("solver hit a mine")
+			break
+		} else if b.Complete() {
 			fmt.Println(textrender.RenderBoard(b))
 			fmt.Println("solver won!")
 			break

@@ -40,6 +40,26 @@ func (s Set[K]) Has(v K) bool {
 	return ok
 }
 
+// Return whether the given condition is true for all set elements.
+func (s Set[K]) All(fn func(K) bool) bool {
+	for v := range s {
+		if !fn(v) {
+			return false
+		}
+	}
+	return true
+}
+
+// Return whether the given condition is true for any set elements.
+func (s Set[K]) Any(fn func(K) bool) bool {
+	for v := range s {
+		if fn(v) {
+			return true
+		}
+	}
+	return false
+}
+
 func (s Set[K]) String() string {
 	out := "("
 	i := 0
